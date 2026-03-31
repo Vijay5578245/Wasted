@@ -19,27 +19,8 @@
           <div class="absolute -top-px left-1/2 -translate-x-1/2 w-24 h-px
                       bg-gradient-to-r from-transparent via-void-600/60 to-transparent" />
 
-          <!-- Verification sent notice (replaces form) -->
-          <div v-if="verificationSent" class="flex flex-col gap-4">
-            <p class="text-[10px] uppercase tracking-ultra font-inter text-void-400">
-              Check your email
-            </p>
-            <p class="text-ink-300/70 font-cormorant font-light text-sm leading-relaxed">
-              A verification link was sent to <span class="text-void-300">{{ registeredEmail }}</span>.
-              Verify your email to activate your account, then sign in.
-            </p>
-            <button
-              @click="() => { verificationSent = false; activeTab = 'login'; $emit('close') }"
-              class="mt-2 py-2.5 text-[10px] uppercase tracking-ultra font-inter
-                     border border-void-800/60 hover:border-void-600/70
-                     text-void-300 hover:text-void-100 rounded transition-all duration-200"
-            >
-              go to sign in
-            </button>
-          </div>
-
           <!-- Auth form -->
-          <template v-else>
+          <template>
             <!-- Tab switcher -->
             <div class="flex gap-6 mb-8">
               <button
@@ -78,32 +59,6 @@
                   </p>
                 </Transition>
               </div>
-
-              <!-- Email (register only) -->
-              <Transition name="fade">
-                <div v-if="activeTab === 'register'" class="flex flex-col gap-1">
-                  <label class="text-[9px] uppercase tracking-ultra text-void-700 font-inter">
-                    email
-                  </label>
-                  <input
-                    v-model="email"
-                    type="email"
-                    autocomplete="email"
-                    required
-                    class="bg-transparent pb-2 outline-none text-ink-100 text-sm font-inter font-light
-                           placeholder-void-900 transition-colors duration-200 caret-void-400"
-                    :class="fieldErrors.email
-                      ? 'border-b border-red-500/60'
-                      : 'border-b border-void-900/60 focus:border-void-600/70'"
-                    placeholder="—"
-                  />
-                  <Transition name="fade">
-                    <p v-if="fieldErrors.email" class="text-red-400/70 text-[10px] font-inter mt-0.5">
-                      {{ fieldErrors.email }}
-                    </p>
-                  </Transition>
-                </div>
-              </Transition>
 
               <!-- Password -->
               <div class="flex flex-col gap-1">
@@ -169,10 +124,7 @@ const { login, register, authError, fieldErrors, authLoading } = useAuth()
 
 const activeTab = ref<'login' | 'register'>('login')
 const username = ref('')
-const email = ref('')
 const password = ref('')
-const verificationSent = ref(false)
-const registeredEmail = ref('')
 
 function switchTab(tab: 'login' | 'register') {
   activeTab.value = tab
@@ -183,7 +135,6 @@ function switchTab(tab: 'login' | 'register') {
 // Reset state when modal is closed/reopened
 watch(() => props.open, (open) => {
   if (!open) {
-    verificationSent.value = false
     authError.value = ''
     fieldErrors.value = {}
   }
@@ -198,13 +149,11 @@ async function handleSubmit() {
       emit('authenticated')
       emit('close')
     } else {
-      registeredEmail.value = email.value
-      await register(username.value, password.value, email.value)
+      await register(username.value, password.value)
       username.value = ''
       password.value = ''
-      email.value = ''
-      // Don't emit 'authenticated' — user must verify email and log in first
-      verificationSent.value = true
+      emit('authenticated')
+      emit('close')
     }
   } catch {
     // errors already set in composable

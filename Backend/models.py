@@ -1,7 +1,7 @@
 import re
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 _USERNAME_RE = re.compile(r'^[a-zA-Z0-9_.\-]+$')
 _PASSWORD_RE = re.compile(r"^[a-zA-Z0-9!@#$%^&*()\-_=+\[\]{};:'\",.<>?/\\|`~]+$")
@@ -10,7 +10,6 @@ _PASSWORD_RE = re.compile(r"^[a-zA-Z0-9!@#$%^&*()\-_=+\[\]{};:'\",.<>?/\\|`~]+$"
 class UserCreate(BaseModel):
     username: str = Field(..., min_length=2, max_length=32)
     password: str = Field(..., min_length=8, max_length=128)
-    email: EmailStr
 
     @field_validator('username')
     @classmethod
@@ -40,8 +39,6 @@ class Token(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
-    email: str
-    is_verified: bool
 
 
 class WalletData(BaseModel):

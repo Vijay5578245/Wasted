@@ -32,26 +32,8 @@
       </svg>
     </div>
 
-    <!-- ─── Verification banner ──────────────────────────── -->
-    <Transition name="fade">
-      <div
-        v-if="isLoggedIn && !isVerified"
-        class="absolute top-0 left-0 right-0 z-20 flex items-center justify-center gap-3
-               py-2 bg-void-950/80 border-b border-void-900/40 backdrop-blur-sm"
-      >
-        <span class="text-[9px] uppercase tracking-ultra font-inter text-void-600">
-          verify your email to secure your account
-        </span>
-        <span class="text-void-800">·</span>
-        <span class="text-[9px] uppercase tracking-ultra font-inter text-void-700">
-          {{ user?.email }}
-        </span>
-      </div>
-    </Transition>
-
     <!-- ─── Header ─────────────────────────────────────────── -->
-    <header class="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-8 z-10"
-            :style="isLoggedIn && !isVerified ? 'top: 2rem' : ''">
+    <header class="absolute top-0 left-0 right-0 h-16 flex items-center justify-between px-8 z-10">
       <!-- Brand -->
       <span
         class="font-cormorant font-light text-ink-200/60 tracking-ultra select-none"
@@ -178,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-const { user, isLoggedIn, isVerified, token, fetchUser, logout } = useAuth()
+const { user, isLoggedIn, token, fetchUser, logout } = useAuth()
 const { ratePerMin, displayAmount, fetchWallet, setRate, startTicking, startSyncing, stopAll, syncWallet } = useWallet()
 
 const showAuth = ref(false)

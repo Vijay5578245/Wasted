@@ -1,8 +1,6 @@
 interface User {
   id: number
   username: string
-  email: string
-  is_verified: boolean
 }
 
 interface TokenResponse {
@@ -13,7 +11,6 @@ interface TokenResponse {
 export interface FieldErrors {
   username?: string
   password?: string
-  email?: string
 }
 
 export const useAuth = () => {
@@ -32,7 +29,6 @@ export const useAuth = () => {
   const authLoading = useState<boolean>('auth_loading', () => false)
 
   const isLoggedIn = computed(() => !!token.value && !!user.value)
-  const isVerified = computed(() => user.value?.is_verified ?? false)
 
   async function fetchUser() {
     if (!token.value) return
@@ -55,11 +51,9 @@ export const useAuth = () => {
     if (Array.isArray(detail)) {
       const general: string[] = []
       for (const d of detail) {
-        // Pydantic v2: loc is ["body", "field_name"] or ["body"]
         const field = d.loc?.[1] as keyof FieldErrors | undefined
-        // Clean up pydantic's verbose prefix
         const msg: string = (d.msg ?? '').replace(/^Value error, /, '')
-        if (field && field !== 'body' && field in { username: 1, password: 1, email: 1 }) {
+        if (field && field in { username: 1, password: 1 }) {
           fieldErrors.value[field] = msg
         } else {
           general.push(msg)
@@ -90,16 +84,17 @@ export const useAuth = () => {
     }
   }
 
-  async function register(username: string, password: string, email: string) {
+  async function register(username: string, password: string) {
     authError.value = ''
     fieldErrors.value = {}
     authLoading.value = true
     try {
-      await $fetch(`${API}/auth/register`, {
+      const data = await $fetch<TokenResponse>(`${API}/auth/register`, {
         method: 'POST',
-        body: { username, password, email },
+        body: { username, password },
       })
-      // No token issued — user must verify email before logging in
+      token.value = data.access_token
+      await fetchUser()
     } catch (e: any) {
       authError.value = parseErrors(e, 'Registration failed')
       throw e
@@ -116,7 +111,7 @@ export const useAuth = () => {
   }
 
   return {
-    token, user, isLoggedIn, isVerified,
+    token, user, isLoggedIn,
     authError, fieldErrors, authLoading,
     login, register, logout, fetchUser,
   }
