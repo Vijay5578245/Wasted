@@ -11,9 +11,6 @@ async def init_db() -> None:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 username TEXT UNIQUE NOT NULL,
                 password_hash TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL DEFAULT '',
-                is_verified INTEGER NOT NULL DEFAULT 0,
-                verification_token TEXT,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -27,16 +24,16 @@ async def init_db() -> None:
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         """)
-        # Migrate existing databases that are missing the new columns
+        # Drop legacy columns that are no longer used
         for migration in [
-            "ALTER TABLE users ADD COLUMN email TEXT NOT NULL DEFAULT ''",
-            "ALTER TABLE users ADD COLUMN is_verified INTEGER NOT NULL DEFAULT 0",
-            "ALTER TABLE users ADD COLUMN verification_token TEXT",
+            "ALTER TABLE users DROP COLUMN email",
+            "ALTER TABLE users DROP COLUMN is_verified",
+            "ALTER TABLE users DROP COLUMN verification_token",
         ]:
             try:
                 await db.execute(migration)
             except Exception:
-                pass  # Column already exists
+                pass  # Column doesn't exist or already dropped
         await db.commit()
 
 
