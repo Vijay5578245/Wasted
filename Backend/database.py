@@ -1,6 +1,7 @@
+import os
 import aiosqlite
 
-DATABASE_URL = "wasted.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "wasted.db")
 
 
 async def init_db() -> None:
