@@ -18,6 +18,7 @@ export const useWallet = () => {
 
   let tickTimer: ReturnType<typeof setInterval> | null = null
   let syncTimer: ReturnType<typeof setInterval> | null = null
+  let pingTimer: ReturnType<typeof setInterval> | null = null
 
   async function fetchWallet() {
     if (!token.value) return
@@ -77,9 +78,23 @@ export const useWallet = () => {
     }, 300_000)
   }
 
+  function startPinging() {
+    if (pingTimer) clearInterval(pingTimer)
+    pingTimer = setInterval(() => {
+      $fetch(`${API}/health`).catch(() => {})
+    }, 600_000)
+  }
+
+  async function resetWallet() {
+    displayAmount.value = 0
+    ratePerMin.value = 0
+    await syncWallet()
+  }
+
   function stopAll() {
     if (tickTimer) { clearInterval(tickTimer); tickTimer = null }
     if (syncTimer) { clearInterval(syncTimer); syncTimer = null }
+    if (pingTimer) { clearInterval(pingTimer); pingTimer = null }
   }
 
   return {
@@ -89,8 +104,10 @@ export const useWallet = () => {
     fetchWallet,
     syncWallet,
     setRate,
+    resetWallet,
     startTicking,
     startSyncing,
+    startPinging,
     stopAll,
   }
 }

@@ -120,6 +120,18 @@
         </Transition>
       </div>
 
+      <!-- Reset button -->
+      <Transition name="fade">
+        <button
+          v-if="isLoggedIn && (displayAmount > 0 || ratePerMin > 0)"
+          @click="resetWallet(); rateInput = ''"
+          class="text-[9px] uppercase tracking-ultra font-inter text-void-800
+                 hover:text-red-900/60 transition-colors duration-200"
+        >
+          reset
+        </button>
+      </Transition>
+
       <!-- Bottom quote -->
       <div class="absolute bottom-10 left-0 right-0 flex flex-col items-center gap-2">
         <div class="w-16 h-px bg-gradient-to-r from-transparent via-void-900/60 to-transparent" />
@@ -161,7 +173,7 @@
 
 <script setup lang="ts">
 const { user, isLoggedIn, token, fetchUser, logout } = useAuth()
-const { ratePerMin, displayAmount, fetchWallet, setRate, startTicking, startSyncing, stopAll, syncWallet } = useWallet()
+const { ratePerMin, displayAmount, fetchWallet, setRate, resetWallet, startTicking, startSyncing, startPinging, stopAll, syncWallet } = useWallet()
 
 const showAuth = ref(false)
 const rateInput = ref<string>('')
@@ -207,6 +219,7 @@ onMounted(async () => {
 
   startTicking()
   startSyncing()
+  startPinging()
 
   // Capture apiBase once here — Nuxt composables can't be called inside event listeners
   const apiBase = useRuntimeConfig().public.apiBase as string
