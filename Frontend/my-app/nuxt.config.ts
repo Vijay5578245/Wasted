@@ -8,6 +8,9 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Wasted',
+        meta: [
+        { name: 'description', content: 'A simple app to track your money wasted along the way' }
+      ],
       link: [
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
