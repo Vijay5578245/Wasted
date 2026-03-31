@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+aiosqlite
+python-jose[cryptography]
+bcrypt
+python-multipart
+slowapi
+python-dotenv
+email-validator
+aiosmtplib

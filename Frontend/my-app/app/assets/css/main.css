@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #07050f;
+  --bg-surface: #0d0a1a;
+  --purple-glow: rgba(107, 31, 208, 0.18);
+  --purple-glow-soft: rgba(107, 31, 208, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+}
+
+/* Scanline overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.025) 3px,
+    rgba(0, 0, 0, 0.025) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Input number: hide arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Custom scrollbar (just in case) */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Counter digit animations */
+@keyframes tick-in {
+  from { opacity: 0.4; transform: translateY(2px); }
+  to   { opacity: 1;   transform: translateY(0); }
+}
+
+.counter-tick {
+  animation: tick-in 0.08s ease-out;
+}
+
+/* Glow pulse for counter */
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 60px rgba(107, 31, 208, 0.2), 0 0 120px rgba(107, 31, 208, 0.08); }
+  50%       { text-shadow: 0 0 80px rgba(107, 31, 208, 0.3), 0 0 160px rgba(107, 31, 208, 0.12); }
+}
+
+.counter-glow {
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+
+/* Fade transitions */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Modal transitions */
+.modal-enter-active,
+.modal-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.modal-enter-from,
+.modal-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.98);
+}
+
+/* Subtle bleed animation for the background orbs */
+@keyframes orb-shift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(2%, 1%) scale(1.03); }
+  66%       { transform: translate(-1%, 2%) scale(0.97); }
+}
+
+.orb-animate {
+  animation: orb-shift 18s ease-in-out infinite;
+}
